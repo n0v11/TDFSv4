@@ -15,7 +15,8 @@ namespace TDFSv4.Controllers
         }
         public IActionResult Index()
         {
-            return View(db.Clients.Include(x => x.Type).ToList());
+            var x = db.Clients.Include(x => x.Type).Include(x => x.Founders).ToList();
+            return View(x);
         }
     }
 }

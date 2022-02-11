@@ -6,13 +6,26 @@
 <form asp-action="edit" asp-controller="Clients">
     <div class="form-group">
         <label asp-for="Name" class="control-label">Имя</label>
-        <input type="text" asp-for="Name" class="form-control"/>
+        <input type="text" asp-for="Name" class="form-control" />
     </div>
+
     <div class="form-group">
         <label asp-for="Tin" class="control-label">ИНН</label>
-        <input type="number" asp-for="Tin" class="form-control"/>
+        <input type="number" asp-for="Tin" class="form-control" />
     </div>
+    @foreach (var item in Model.Founders)
+    {
+        <div class="form-group">
+            <label asp-for="Founders" class="control-label">ФИО</label>
+            <input asp-for="@item.Fio" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Founders" class="control-label">ИНН</label>
+            <input asp-for="@item.Tin" class="form-control" />
+        </div>
+    }
     <div class="form-group">
-        <input type="submit" value="Отправить"/>
+        <input type="submit" value="Отправить" />
     </div>
 </form>

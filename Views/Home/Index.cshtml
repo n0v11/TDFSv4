@@ -8,27 +8,14 @@
 <head>
     <title>Список клиентов</title>
 </head>
-@*<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<form asp-controller="Home" asp-action="Index" method="get">
-    <p>
-
-        <select asp-for="MovieGenre" asp-items="Model.">
-            <option value="">All</option>
-        </select>
-
-        Title: <input type="text" asp-for="SearchString" />
-        <input type="submit" value="Filter" />
-    </p>
-</form>*@
 <body>
     <h3>Клиенты</h3>
-    <table>
+    <table class="table">
         <tr>
             <td>Имя</td>
             <td>Тип</td>
             <td>ИНН</td>
+            <td>Учредители</td>
             <td>Дата добавления</td>
             <td>Дата изменения</td>
             <td></td>
@@ -39,18 +26,22 @@
                 <td>@client.Name</td>
                 <td>@client.Type.Name</td>
                 <td>@client.Tin</td>
-                <td>@client.CreationDate</td>
-                <td>@client.UpdateDate</td>
                 <td>
-                    <td><a href="~/Clients/Edit/@client.Id">Изменить</a></td>
-                    @*<a asp-action="Edit" asp-route-id="@client.Id">Edit</a> |*@
-@*                    <a asp-action="Create" asp-route-id="@client.Id">Create</a>
-                    <a asp-action="Delete" asp-route-id="@client.Id">Delete</a>*@
-                    <a asp></a>
-
-                </td>
-            </tr>
-        }
+                    @if (client.Founders != null)
+                    {
+                        @String.Join(',', client.Founders.Select(x => x.Fio));
+                    }
+                    else
+                    {
+                        @("Нет учредителя")
+                    }
+            </td>
+            <td>@client.CreationDate</td>
+            <td>@client.UpdateDate</td>
+            <td><a asp-controller="Clients" asp-action="Edit" asp-route-id="@client.Id">Edit</a></td>
+            <td><a asp-action="Delete" asp-controller="Clients" asp-route-id="@client.Id">Delete</a></td>
+        </tr>
+    }
     </table>
 </body>
 </html>

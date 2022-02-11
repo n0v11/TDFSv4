@@ -13,11 +13,6 @@ namespace TDFSv4.Controllers
 {
     public class ClientsController : Controller
     {
-        private IEnumerable<Type> types = new List<Type>
-        {
-            new Type {Id = 1, Name = "ЮЛ"},
-            new Type {Id = 2, Name = "ИП"}
-        };
 
         private ApplicationContext db;
         public ClientsController(ApplicationContext context)
@@ -34,32 +29,36 @@ namespace TDFSv4.Controllers
         // GET: Clients/Create
         public IActionResult Create()
         {
-            ViewBag.Types = new SelectList(types, "Id", "Name");
+            ViewBag.Types = new SelectList(db.Types, nameof(Type.Id), nameof(Type.Name));
             return View();
         }
 
         // POST: Clients/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Type,Tin,CreationDate,UpdateDate")] Client client)
+        public async Task<IActionResult> Create(Client client)
         {
             if (ModelState.IsValid)
             {
-                client.Type = types.FirstOrDefault(x => x.Id == client.Tin);
+                //if (client.TypeId == 2 && client.Founders.Count > 1) //тупая проверка на наличие 2 учредителей у ип
+                //{
+                //    return RedirectToAction("Index", "Home");
+                //}
+                //client.Type = new Type(client.TypeId);
+                //client.Type.Name = db.Types.FirstOrDefault(x => x.Id == client.TypeId).Name;
                 client.CreationDate = DateTime.Now;
                 client.UpdateDate = DateTime.Now;
                 db.Add(client);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index", "Home");
-                //return RedirectToAction(nameof(Index));
             }
             return View(client);
         }
 
-        // GET: Movies/Edit/5
+        // GET: Client/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var client = await db.Clients.FindAsync(id); //не то же ли самое?
+            var client = await db.Clients.Include(x => x.Founders).SingleAsync(x => x.Id == id); //не то же ли самое?
             if (id == null || client == null)
             {
                 return NotFound();
@@ -67,49 +66,32 @@ namespace TDFSv4.Controllers
             return View(client);
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, Client updatedUserData)
         {
-            if (string.IsNullOrWhiteSpace(updatedUserData.Name) || updatedUserData.Tin < 0) // Нужно больше кейсов для проверки
+            if (string.IsNullOrWhiteSpace(updatedUserData.Name)) // Нужно больше кейсов для проверки
             {
                 return BadRequest("Не введено имя пользователи или инн равен нулю или менее нуля");
             }
             Client client = await db.Clients.FirstOrDefaultAsync(x => x.Id == id);
             client.Name = updatedUserData.Name;
             client.Tin = updatedUserData.Tin;
+            client.UpdateDate = DateTime.Now;
             await db.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Clients/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
+            var client = await db.Clients.Include(x => x.Founders).SingleAsync(x => x.Id == id);
+            foreach (var f in client.Founders)
             {
-                return NotFound();
+                db.Founders.Remove(f);
             }
-
-            var client = await db.Clients
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (client == null)
-            {
-                return NotFound();
-            }
-
-            return View(client);
-        }
-
-        // POST: Movies/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var client = await db.Clients.FindAsync(id);
             db.Clients.Remove(client);
             await db.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
-            //return RedirectToAction(nameof(Index));
         }
     }
 }

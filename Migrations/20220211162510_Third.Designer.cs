@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TDFSv4.Models;
 
 namespace TDFSv4.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20220211162510_Third")]
+    partial class Third
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +57,7 @@ namespace TDFSv4.Migrations
                             Name = "ООО Аленка",
                             Tin = 9998130573L,
                             TypeId = 1,
-                            UpdateDate = new DateTime(2022, 2, 11, 22, 29, 25, 138, DateTimeKind.Local).AddTicks(6293)
+                            UpdateDate = new DateTime(2022, 2, 11, 19, 25, 8, 944, DateTimeKind.Local).AddTicks(5384)
                         });
                 });
 
@@ -107,11 +109,6 @@ namespace TDFSv4.Migrations
                         {
                             Id = 1,
                             Name = "ЮЛ"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "ИП"
                         });
                 });
 
@@ -127,7 +124,7 @@ namespace TDFSv4.Migrations
             modelBuilder.Entity("TDFSv4.Models.Founder", b =>
                 {
                     b.HasOne("TDFSv4.Models.Client", null)
-                        .WithMany("Founders")
+                        .WithMany("Founder")
                         .HasForeignKey("ClientId");
                 });
 #pragma warning restore 612, 618
