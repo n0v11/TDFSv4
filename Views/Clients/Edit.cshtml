@@ -3,29 +3,47 @@
     ViewBag.Title = "Редактирование пользователя";
 }
 
-<form asp-action="edit" asp-controller="Clients">
-    <div class="form-group">
+<form asp-action="Edit" asp-controller="Clients">
+    <p>Редактирование клиента</p>
+    <div class="mb-3">
         <label asp-for="Name" class="control-label">Имя</label>
-        <input type="text" asp-for="Name" class="form-control" />
+        <input asp-for="Name" class="form-control" />
     </div>
 
-    <div class="form-group">
+    <div class="mb-3">
         <label asp-for="Tin" class="control-label">ИНН</label>
-        <input type="number" asp-for="Tin" class="form-control" />
+        <input asp-for="Tin" class="form-control" />
     </div>
-    @foreach (var item in Model.Founders)
+
+    @for (int i = 0; i < Model.Founders.Count; i++)
     {
-        <div class="form-group">
+        <p>Учредитель @(i + 1)</p>
+        <div class="mb-3">
             <label asp-for="Founders" class="control-label">ФИО</label>
-            <input asp-for="@item.Fio" class="form-control" />
+            <input asp-for="@Model.Founders[i].Fio" class="form-control" />
         </div>
 
-        <div class="form-group">
+        <div class="mb-3">
             <label asp-for="Founders" class="control-label">ИНН</label>
-            <input asp-for="@item.Tin" class="form-control" />
+            <input asp-for="@Model.Founders[i].Tin" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Founders" class="control-label">Дата создания</label>
+            <input asp-for="@Model.Founders[i].CreationDate" type="datetime" class="form-control" readonly="" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Founders" class="control-label">Последняя дата изменения</label>
+            <input asp-for="@Model.Founders[i].UpdateDate" type="datetime" class="form-control" readonly="" />
+        </div>
+
+        <div class="mb-3">
+            <input asp-for="@Model.Founders[i].Id" type="datetime" class="form-control" readonly="" hidden="" /> @*ввод id в форму чтобы потом найти учредителя*@
         </div>
     }
-    <div class="form-group">
+
+    <div class="mb-3">
         <input type="submit" value="Отправить" />
     </div>
 </form>

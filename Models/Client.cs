@@ -8,6 +8,8 @@ namespace TDFSv4.Models
     public class Client
     {
         public int Id { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         public int TypeId { get; set; }

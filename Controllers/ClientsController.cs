@@ -20,12 +20,6 @@ namespace TDFSv4.Controllers
             db = context;
         }
 
-        //public async Task<IActionResult> Index()
-        //{
-        //    return RedirectToAction("Index", "Home");
-        //}
-
-
         // GET: Clients/Create
         public IActionResult Create()
         {
@@ -40,14 +34,13 @@ namespace TDFSv4.Controllers
         {
             if (ModelState.IsValid)
             {
-                //if (client.TypeId == 2 && client.Founders.Count > 1) //тупая проверка на наличие 2 учредителей у ип
-                //{
-                //    return RedirectToAction("Index", "Home");
-                //}
-                //client.Type = new Type(client.TypeId);
-                //client.Type.Name = db.Types.FirstOrDefault(x => x.Id == client.TypeId).Name;
+                foreach (var founder in client.Founders)
+                {
+                    founder.CreationDate = DateTime.Now;
+                    founder.UpdateDate = founder.CreationDate;
+                }
                 client.CreationDate = DateTime.Now;
-                client.UpdateDate = DateTime.Now;
+                client.UpdateDate = client.CreationDate;
                 db.Add(client);
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index", "Home");
@@ -58,7 +51,7 @@ namespace TDFSv4.Controllers
         // GET: Client/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            var client = await db.Clients.Include(x => x.Founders).SingleAsync(x => x.Id == id); //не то же ли самое?
+            var client = await db.Clients.Include(x => x.Founders).SingleAsync(x => x.Id == id);
             if (id == null || client == null)
             {
                 return NotFound();
@@ -74,20 +67,42 @@ namespace TDFSv4.Controllers
             {
                 return BadRequest("Не введено имя пользователи или инн равен нулю или менее нуля");
             }
-            Client client = await db.Clients.FirstOrDefaultAsync(x => x.Id == id);
+            Client client = await db.Clients.Include(x => x.Founders).SingleAsync(x => x.Id == id);
+            if (!client.Name.Equals(updatedUserData.Name) || !client.Tin.Equals(updatedUserData.Tin))
+            {
+                client.UpdateDate = DateTime.Now;
+            }
             client.Name = updatedUserData.Name;
             client.Tin = updatedUserData.Tin;
-            client.UpdateDate = DateTime.Now;
+            FoundersEdit(updatedUserData);
+
             await db.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
+
+            void FoundersEdit(Client updatedUserData)
+            {
+                if (client.Founders != null)
+                {
+                    foreach (var founder in client.Founders)
+                    {
+                        var updatedFounderData = updatedUserData.Founders.FirstOrDefault(x => x.Id == founder.Id);
+                        if (!founder.Fio.Equals(updatedFounderData.Fio) || !founder.Tin.Equals(updatedFounderData.Tin)) //можно учесть доп факторы
+                        {
+                            founder.UpdateDate = DateTime.Now;
+                        }
+                        founder.Fio = updatedFounderData.Fio;
+                        founder.Tin = updatedFounderData.Tin;
+                    }
+                }
+            }
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var client = await db.Clients.Include(x => x.Founders).SingleAsync(x => x.Id == id);
-            foreach (var f in client.Founders)
+            Client client = await db.Clients.Include(x => x.Founders).SingleAsync(x => x.Id == id);
+            foreach (var founder in client.Founders)
             {
-                db.Founders.Remove(f);
+                db.Founders.Remove(founder);
             }
             db.Clients.Remove(client);
             await db.SaveChangesAsync();

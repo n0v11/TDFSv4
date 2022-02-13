@@ -8,7 +8,6 @@ namespace TDFSv4.Models
         public DbSet<Type> Types { get; set; }
         public DbSet<Client> Clients { get; set; } 
         public DbSet<Founder> Founders { get; set; }
-        
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {

@@ -1,40 +1,28 @@
 ﻿@model IEnumerable<TDFSv4.Models.Client>
 @{
-    ViewData["Title"] = "Clients List";
+    ViewData["Title"] = "Список клиентов";
 }
-<!DOCTYPE html>
 
-<html>
-<head>
-    <title>Список клиентов</title>
-</head>
-<body>
-    <h3>Клиенты</h3>
-    <table class="table">
+<h3>Клиенты</h3>
+<table class="table table-striped">
+    <thead>
         <tr>
-            <td>Имя</td>
-            <td>Тип</td>
-            <td>ИНН</td>
-            <td>Учредители</td>
-            <td>Дата добавления</td>
-            <td>Дата изменения</td>
-            <td></td>
+            <th scope="col">Имя</th>
+            <th scope="col">Тип</th>
+            <th>ИНН</th>
+            <th scope="col">Учредители</th>
+            <th scope="col">Дата добавления</th>
+            <th scope="col" Дата изменения</th>
         </tr>
-        @foreach (var client in Model)
-        {
-            <tr>
-                <td>@client.Name</td>
-                <td>@client.Type.Name</td>
-                <td>@client.Tin</td>
-                <td>
-                    @if (client.Founders != null)
-                    {
-                        @String.Join(',', client.Founders.Select(x => x.Fio));
-                    }
-                    else
-                    {
-                        @("Нет учредителя")
-                    }
+    </thead>
+    @foreach (var client in Model)
+    {
+        <tr>
+            <td>@client.Name</td>
+            <td>@client.Type.Name</td>
+            <td>@client.Tin</td>
+            <td>
+                @(client.Founders.Count != 0 ? String.Join(',', client.Founders.Select(x => x.Fio)) : "Нет учредителя")
             </td>
             <td>@client.CreationDate</td>
             <td>@client.UpdateDate</td>
@@ -42,7 +30,6 @@
             <td><a asp-action="Delete" asp-controller="Clients" asp-route-id="@client.Id">Delete</a></td>
         </tr>
     }
-    </table>
-</body>
-</html>
+</table>
+
 
